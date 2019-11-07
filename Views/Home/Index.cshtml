@@ -1,0 +1,134 @@
+﻿@model mvcTest.Models.RibonFilterModel
+
+@{
+    ViewData["Title"] = "Notebook";
+}
+
+<div class="table-ribon"> 
+    <form>
+        <table class="ribon" width="100%">
+            <td width="50%">
+                @Html.LabelFor(m => m.dateFrom)
+                @Html.EditorFor(m => m.dateFrom, new { htmlAttributes = new { 
+                    @Value = String.Format("{0:dd/MM/yyyy}", Model.dateFrom) }})
+                @Html.LabelFor(m => m.dateTo)
+                @Html.EditorFor(m => m.dateTo, new { htmlAttributes = new { 
+                    @Value = String.Format("{0:dd/MM/yyyy}", Model.dateTo) }})
+            </td>
+            <td width="30%" align="right">
+                @Html.LabelFor(m => m.Category)
+                @Html.DropDownListFor(m => m.Category, Model.Categories, "<All>")
+            </td>
+            <td align="center">
+                <input class="btn btn-primary" type="submit" value="Filter">
+                @Html.ActionLink("Reset", "Index", new { dateFrom = "", dateTo = "", Category = "", page = ViewBag.Page == 1 ? "" : ViewBag.Page}, new { @class = "btn btn-primary" })
+            </td>
+        </table>
+    </form>
+</div>
+
+<div class="table-notes">
+    <table class="notes" width="100%">
+        <tr>
+            <th width="20%">Date</th>
+            <th>Title</th>
+            <th width="30%">Actions</th>
+        </tr>
+        @for (int idx = ViewBag.PageSize*(ViewBag.Page - 1); (idx < ViewBag.PageSize*ViewBag.Page && idx < Model.Notes.Count()); idx++)
+        {
+            <tr class="note">
+                <td align="center">@Html.DisplayFor(item => Model.Notes.ElementAt(idx).DateCreation)</td>
+                <td align="left">@Html.DisplayFor(item => Model.Notes.ElementAt(idx).Title)</td>
+                <td align="center">
+                    
+                    @using (Html.BeginForm())
+                    {
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#noteModal" 
+                            data-title=@Model.Notes.ElementAt(idx).Title
+                            data-content=@Model.Notes.ElementAt(idx).Content
+                            data-category=@String.Join(',', Model.Notes.ElementAt(idx).Categories)>View</button>
+                        @Html.HiddenFor(m => m.dateFrom)
+                        @Html.HiddenFor(m => m.dateTo)
+                        @Html.HiddenFor(m => m.Category)
+                        @Html.Hidden("noteTitle", Model.Notes.ElementAt(idx).Title)
+                        <input type="submit" value="Edit" class="btn btn-primary" formaction="Home/Note">
+                        <input type="submit" value="Delete" class="btn btn-primary" formaction="Home/DeleteNote">
+                    }
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+<div class="table-pages">
+    <table class="controls" width="100%">
+        <td>
+            @using (Html.BeginForm("Note","Home"))
+            {
+                @Html.HiddenFor(m => m.dateFrom)
+                @Html.HiddenFor(m => m.dateTo)
+                @Html.HiddenFor(m => m.Category)
+                <input type="submit" value="New" class="btn btn-primary">
+            }
+        </td>
+        <td align="right">
+            @Html.ActionLink("Previous Page", "Index", new { 
+                dateFrom = Model.dateFrom == DateTime.MinValue ? "" : String.Format("{0:yyyy-MM-dd}", Model.dateFrom),
+                dateTo = Model.dateTo == DateTime.MinValue ? "" : String.Format("{0:yyyy-MM-dd}", Model.dateTo),
+                category = Model.Category == null ? "" : Model.Category,
+                page = ViewBag.Page == 1 ? 1 : ViewBag.Page - 1 }, new { @class = "btn btn-primary" })
+            @ViewBag.Page / @ViewBag.MaxPage
+            @Html.ActionLink("Next Page", "Index", new {
+                dateFrom = Model.dateFrom == DateTime.MinValue ? "" : String.Format("{0:yyyy-MM-dd}", Model.dateFrom),
+                dateTo = Model.dateTo == DateTime.MinValue ? "" : String.Format("{0:yyyy-MM-dd}", Model.dateTo),
+                category = Model.Category == null ? "" : Model.Category,
+                page = ViewBag.Page == ViewBag.MaxPage ? ViewBag.MaxPage : ViewBag.Page + 1}, new { @class = "btn btn-primary" })
+        </td>
+    </table>
+</div>
+
+
+<div class="modal fade" id="noteModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <form>
+                    <table>
+                        <tr class="form-group" >
+                            <td align="right"><label for="note-title">Title of the note:</label></td>
+                            <td><input type="text" readonly class="form-control" id="note-title"></td>
+                        </tr>
+                        <tr class="form-group">
+                            <td align="right"><label for="note-content">Content of the note:</label></td>
+                            <td><textarea rows="5" readonly class="form-control" id="note-content"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="right"><label for="note-category">Categories:</label></td>
+                            <td><input type="text" readonly class="form-control" id="note-category"></td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $('#noteModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget)
+        var title = button.data('title')
+        var content = button.data('content')
+        var category = button.data('category')
+        var action = button.data('action')
+        var modal = $(this)
+        modal.find('.modal-body #note-title').val(title)
+        modal.find('.modal-body #note-content').text(content)
+        modal.find('.modal-body #note-category').val(category)
+        })
+    </script>
+}

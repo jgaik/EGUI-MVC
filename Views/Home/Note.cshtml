@@ -1,0 +1,66 @@
+@model mvcTest.Models.RibonFilterModel
+
+<div>
+    @using (@Html.BeginForm())
+    {
+        <table width="60%" align="center">
+            <tr>
+                <td class="note-label">
+                    @Html.LabelFor(x => x.NoteEdit.Title)
+                </td>
+                <td class="note-content" colspan="2">
+                    @Html.EditorFor(x => x.NoteEdit.Title)
+                    @if (ViewBag.Valid == false)
+                    {
+                        @Html.ValidationMessage("Title", "Please enter unique note title", "text-danger")
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td class="note-label">
+                    @Html.LabelFor(x => x.NoteEdit.Content)
+                </td>
+                <td class="note-content" colspan="2">
+                    @Html.TextAreaFor(x => x.NoteEdit.Content)
+                </td>
+            </tr>
+            <tr>
+                <td class="note-label">
+                    @Html.LabelFor(x => x.NoteEdit.Categories)
+                </td>
+                <td class="note-content">
+                    @if (Model.NoteEdit == null || Model.NoteEdit.Categories == null)
+                    {
+                        @Html.ListBox("Categories", new List<SelectListItem>())
+                    }else 
+                    {
+                        @Html.ListBox("Categories", new SelectList(Model.NoteEdit.Categories.Split(",")))
+                        @Html.HiddenFor(m => m.NoteEdit.Categories)
+                    }
+                </td>
+                <td>
+                    @Html.LabelFor(m => m.NoteEdit.CategoryNew)
+                    @Html.TextBoxFor(m => m.NoteEdit.CategoryNew)
+                    @Html.HiddenFor(m => m.dateFrom)
+                    @Html.HiddenFor(m => m.dateTo)
+                    @Html.HiddenFor(m => m.Category)
+                    <input type="submit" class="btn btn-primary" value="Add/Remove" formaction="Note">
+                </td>
+            </tr>
+        </table>
+        <div align="right" width="50%">
+                @if (Model.NoteEdit.Title == null)
+                {
+                    <input type="submit" class="btn btn-primary" value="Add Note" formaction="AddNote">
+                } else
+                {
+                    @Html.Hidden("currentTitle", Model.NoteEdit.Title)
+                    <input type="submit" class="btn btn-primary" value="Save Note" formaction="SaveNote">
+                }
+                @Html.ActionLink("Cancel", "Index", new { 
+                    dateFrom = Model.dateFrom == DateTime.MinValue ? "" : String.Format("{0:yyyy-MM-dd}", Model.dateFrom),
+                    dateTo = Model.dateTo == DateTime.MinValue ? "" : String.Format("{0:yyyy-MM-dd}", Model.dateTo),
+                    category = Model.Category == null ? "" : Model.Category}, new { @class = "btn btn-primary" })
+        </div>
+    }
+</div>
