@@ -44,15 +44,17 @@
                     @Html.HiddenFor(m => m.dateFrom)
                     @Html.HiddenFor(m => m.dateTo)
                     @Html.HiddenFor(m => m.Category)
+                    @Html.HiddenFor(m => m.NoteCommand)
                     <input type="submit" class="btn btn-primary" value="Add/Remove" formaction="Note">
                 </td>
             </tr>
         </table>
         <div align="right" width="50%">
-                @if (Model.NoteEdit.Title == null)
+                @if (Model.NoteCommand == "Add")
                 {
                     <input type="submit" class="btn btn-primary" value="Add Note" formaction="AddNote">
-                } else
+                }
+                @if (Model.NoteCommand == "Save")
                 {
                     @Html.Hidden("currentTitle", Model.NoteEdit.Title)
                     <input type="submit" class="btn btn-primary" value="Save Note" formaction="SaveNote">

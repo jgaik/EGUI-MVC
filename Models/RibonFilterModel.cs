@@ -25,5 +25,7 @@ namespace mvcTest.Models
         public IEnumerable<SelectListItem> Categories { get; set; }
         public List<NoteModel> Notes { get; set; }
         public NoteModel NoteEdit { get; set; }
+
+        public string NoteCommand { get; set; }
     }
 }

@@ -78,8 +78,10 @@ namespace mvcTest.Controllers
                 category = model.Category == null ? "" : model.Category} );
         }
 
-        public IActionResult Note(RibonFilterModel model, string noteTitle)
+        public IActionResult Note(RibonFilterModel model, string noteTitle, string command)
         {
+            if (model.NoteCommand == null && command != null)
+                model.NoteCommand = command;
             if (noteTitle != null)
             {
                 model.NoteEdit = new NoteModel(noteTitle);

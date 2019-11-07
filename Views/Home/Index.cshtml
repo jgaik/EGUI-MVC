@@ -51,6 +51,7 @@
                         @Html.HiddenFor(m => m.dateTo)
                         @Html.HiddenFor(m => m.Category)
                         @Html.Hidden("noteTitle", Model.Notes.ElementAt(idx).Title)
+                        @Html.Hidden("command", "Save")
                         <input type="submit" value="Edit" class="btn btn-primary" formaction="Home/Note">
                         <input type="submit" value="Delete" class="btn btn-primary" formaction="Home/DeleteNote">
                     }
@@ -67,6 +68,7 @@
                 @Html.HiddenFor(m => m.dateFrom)
                 @Html.HiddenFor(m => m.dateTo)
                 @Html.HiddenFor(m => m.Category)
+                @Html.Hidden("command", "Add")
                 <input type="submit" value="New" class="btn btn-primary">
             }
         </td>
